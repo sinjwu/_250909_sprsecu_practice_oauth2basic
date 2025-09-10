@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 대시보드</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">OAuth Demo</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/logout">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>OAuth 2.0 로그인 성공!</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img th:src="${picture}" class="img-fluid rounded-circle"
+                                 alt="프로필 사진" style="max-width: 100px;">
+                        </div>
+                        <div class="col-md-9">
+                            <h5 th:text="${name}">사용자 이름</h5>
+                            <p class="text-muted" th:text="${email}">이메일</p>
+                            <p><span class="badge bg-info" th:text="${provider}">제공자</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6>OAuth 2.0 정보</h6>
+                </div>
+                <div class="card-body">
+                    <h6>Authorization Code Grant 플로우 완료:</h6>
+                    <ol>
+                        <li class="text-success">✓ 사용자가 <span th:text="${provider}"></span>에서 인증</li>
+                        <li class="text-success">✓ Authorization Code 수신</li>
+                        <li class="text-success">✓ Access Token 교환</li>
+                        <li class="text-success">✓ 사용자 정보 API 호출</li>
+                        <li class="text-success">✓ Spring Security 세션 생성</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6>API 테스트</h6>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary btn-sm" onclick="fetchUserInfo()">
+                        사용자 정보 API
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="fetchUserDetails()">
+                        상세 정보 API
+                    </button>
+
+                    <div id="apiResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function fetchUserInfo() {
+      try {
+        const response = await fetch('/api/user');
+        const data = await response.json();
+        displayResult(data);
+      } catch (error) {
+        displayResult({error: error.message});
+      }
+    }
+
+    async function fetchUserDetails() {
+      try {
+        const response = await fetch('/api/user/details');
+        const data = await response.json();
+        displayResult(data);
+      } catch (error) {
+        displayResult({error: error.message});
+      }
+    }
+
+    function displayResult(data) {
+      document.getElementById('apiResult').innerHTML =
+              '<pre class="bg-light p-2 small">' +
+              JSON.stringify(data, null, 2) +
+              '</pre>';
+    }
+</script>
+</body>
+</html>
